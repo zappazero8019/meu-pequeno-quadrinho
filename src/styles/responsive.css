@@ -1,0 +1,143 @@
+/* ==========================================================================
+   Meu Pequeno Quadrinho — responsividade
+   Celulares pequenos, telas maiores, landscape e movimento reduzido.
+   ========================================================================== */
+
+@media (min-width: 560px) {
+  .hero-card {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    align-items: center;
+  }
+
+  .menu-grid {
+    gap: 1rem;
+  }
+
+  .story-card {
+    grid-template-columns: 150px minmax(0, 1fr);
+  }
+
+  .story-card__cover {
+    min-height: 160px;
+  }
+
+  .book-page {
+    min-height: 320px;
+  }
+}
+
+@media (max-width: 390px) {
+  .menu-tile {
+    gap: 0.55rem;
+    padding: 0.8rem;
+  }
+
+  .menu-tile__icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .menu-tile__text strong {
+    font-size: 0.88rem;
+  }
+
+  .mode-card,
+  .placeholder-box {
+    padding: 0.7rem;
+  }
+
+  .page-controls .button {
+    padding-inline: 0.6rem;
+    font-size: 0.88rem;
+  }
+}
+
+@media (max-width: 359px) {
+  .brand__name {
+    font-size: 0.9rem;
+  }
+
+  .header-badge {
+    display: none;
+  }
+
+  .menu-grid,
+  .mode-list,
+  .editor-grid,
+  .page-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .story-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .story-card__cover {
+    min-height: 150px;
+  }
+
+  .bottom-nav__item {
+    font-size: 0.66rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .app-header {
+    padding-block: 0.4rem;
+  }
+
+  .app-main {
+    padding-top: 0.75rem;
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
+
+  .bottom-nav {
+    padding-block: 0.3rem calc(0.3rem + env(safe-area-inset-bottom));
+  }
+
+  .bottom-nav__item {
+    min-height: 48px;
+  }
+
+  .bottom-nav__item .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .hero-card {
+    padding: 1rem;
+  }
+
+  .hero-illustration {
+    max-height: 150px;
+  }
+
+  .canvas-placeholder {
+    min-height: 170px;
+  }
+
+  .book-page {
+    min-height: 180px;
+  }
+
+  .screen-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .section-title {
+    margin-top: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#5B45C6">
+  <meta name="description" content="Crie histórias em quadrinhos com desenhos, cores e narrações. Primeira versão: estrutura e identidade visual.">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+  <link rel="stylesheet" href="./src/styles/main.css">
+  <link rel="stylesheet" href="./src/styles/components.css">
+  <link rel="stylesheet" href="./src/styles/responsive.css">
+  <title>Meu Pequeno Quadrinho</title>
+</head>
+<body>
+  <a class="skip-link" href="#app">Pular para o conteúdo</a>
+
+  <div class="app-shell">
+    <header class="app-header">
+      <button class="header-back" id="header-back" type="button" hidden>
+        <img src="./assets/icons/arrow-left.svg" alt="" class="icon">
+        <span>Voltar</span>
+      </button>
+
+      <a class="brand" href="#/home" aria-label="Meu Pequeno Quadrinho — ir para o início">
+        <img src="./assets/icons/book.svg" alt="" class="icon brand__icon">
+        <span class="brand__name">Meu Pequeno Quadrinho</span>
+      </a>
+
+      <span class="header-badge" id="header-badge" hidden>Prévia</span>
+    </header>
+
+    <main class="app-main" id="app" tabindex="-1"></main>
+
+    <nav class="bottom-nav" aria-label="Navegação principal">
+      <a class="bottom-nav__item" href="#/home" data-nav="home">
+        <img src="./assets/icons/home.svg" alt="" class="icon">
+        <span class="nav-label">Início</span>
+      </a>
+      <a class="bottom-nav__item" href="#/library" data-nav="library">
+        <img src="./assets/icons/library.svg" alt="" class="icon">
+        <span class="nav-label">Biblioteca</span>
+      </a>
+      <a class="bottom-nav__item" href="#/reader" data-nav="reader">
+        <img src="./assets/icons/headphones.svg" alt="" class="icon">
+        <span class="nav-label">Ouvir</span>
+      </a>
+      <a class="bottom-nav__item" href="#/backups" data-nav="backups">
+        <img src="./assets/icons/shield.svg" alt="" class="icon">
+        <span class="nav-label">Backups</span>
+      </a>
+    </nav>
+  </div>
+
+  <script type="module" src="./src/app/router.js"></script>
+</body>
+</html>

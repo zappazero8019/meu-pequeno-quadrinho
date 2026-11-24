@@ -1,0 +1,35 @@
+{
+  "id": "./",
+  "name": "Meu Pequeno Quadrinho",
+  "short_name": "Meu Quadrinho",
+  "description": "Crie histórias em quadrinhos com desenhos, cores e narrações. Versão inicial: estrutura e identidade visual.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FFF8EC",
+  "theme_color": "#5B45C6",
+  "categories": ["education", "entertainment"],
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
