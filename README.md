@@ -270,7 +270,8 @@ exigidos e três verificações adicionais (IndexedDB indisponível, falha na
 recuperação e conexão fechada durante a gravação), incluindo falhas simuladas de
 quota e transação, evidência de que o ID e `createdAt` sobrevivem a atualizações
 e recuperação após fechar/reabrir a conexão. O Service Worker passou para o
-cache `v11` nessa fase e inclui os novos módulos.
+cache `v11` nessa fase e inclui os novos módulos; a versão atual consolidada
+é `v14`.
 
 ## Biblioteca funcional (Fase 3.3)
 
@@ -296,7 +297,8 @@ também reutiliza a mesma promessa quando há cliques repetidos no mesmo ID.
 Testes: `node --test tests/library.test.mjs`. A suíte cobre os 15 casos
 exigidos mais duas verificações (ID inexistente e falha na consulta de abertura),
 usando os fakes locais das fases anteriores e bancos isolados. O Service Worker
-passou para o cache `v12` e inclui `library-data.js`.
+passou para o cache `v12` e inclui `library-data.js`; a versão atual
+consolidada é `v14`.
 
 ## Modo expandido e narração por página
 

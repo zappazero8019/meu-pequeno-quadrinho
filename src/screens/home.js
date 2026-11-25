@@ -83,7 +83,7 @@ export function render() {
 
     <div class="notice notice--info">
       ${icon('info')}
-      <p><strong>Já disponível.</strong> Telas, navegação, desenho, salvamento automático e biblioteca neste dispositivo. Narração, quadrinhos e backups ainda ficam para as próximas etapas.</p>
+      <p><strong>Já disponível.</strong> Telas, navegação, desenho, salvamento automático, biblioteca e narração por página: grave a voz original da criança, guarde o áudio neste dispositivo e reproduza depois. Quadrinhos e backups ainda ficam para as próximas etapas.</p>
     </div>
   </section>`;
 }
