@@ -1,6 +1,9 @@
 # Artefatos regeneráveis do Graphify
 graphify-out/
 
+# Cópias de segurança locais feitas durante implementações
+.backup-*/
+
 # Ambientes virtuais e caches Python
 .venv/
 venv/

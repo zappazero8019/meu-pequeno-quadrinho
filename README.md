@@ -2,10 +2,15 @@
 
 Aplicativo web infantil, instalável como PWA, para criar histórias em quadrinhos.
 
-> **Status: Fase 1 — estrutura, identidade visual e navegação.**
-> Nenhum desenho, narração, história ou backup é salvo nesta versão. Todos os
-> recursos ainda não implementados aparecem explicitamente como **"em breve"**
-> e seus botões estão desativados.
+> **Status: Fase 2.2 — Desfazer e Refazer.**
+> Agora é possível desenhar com lápis, pincel e borracha, escolher cor e
+> espessura, apagar a página atual com confirmação, usar um modo expandido
+> imersivo e corrigir erros com **Desfazer** e **Refazer**. Toda a área visível
+> do canvas é válida para desenho, sem zonas mortas nas bordas e sem distorcer
+> o conteúdo. Cada página tem seu próprio histórico, com até 30 ações.
+> Os desenhos ficam apenas na memória da aba: nada é salvo. Narração,
+> quadrinhos, backups e demais recursos futuros continuam marcados como
+> **"em breve"**, com botões desativados quando não funcionam.
 
 ## O que está implementado
 
@@ -16,10 +21,11 @@ Aplicativo web infantil, instalável como PWA, para criar histórias em quadrinh
   história falsa é exibida.
 - Formulário de nova história com validação de campos obrigatórios e tamanho
   mínimo, contadores de caracteres e mensagens de erro acessíveis.
-- Tela de preparação do editor seguida da estrutura visual do editor com:
-  identificação da história, página, área de desenho, modos (desenho livre e
-  quadrinhos), espaços reservados para ferramentas e paleta, área de narração e
-  navegação entre páginas.
+- Tela de preparação do editor seguida do editor com: identificação da história,
+  página, área de desenho funcional (normal ou expandida), ferramentas de lápis,
+  pincel e borracha, paleta de oito cores, três espessuras, botão "Apagar tudo"
+  com confirmação, modos (desenho livre pronto e quadrinhos em breve), área de
+  narração e navegação entre páginas.
 - Tela de leitura com prévia do livro, paginação funcional e controle de áudio
   visualmente desativado.
 - Tela de backups com exportação, importação e informações de proteção apenas
@@ -33,8 +39,8 @@ Aplicativo web infantil, instalável como PWA, para criar histórias em quadrinh
 
 ## O que ainda NÃO está implementado
 
-- Motor de desenho livre e modo quadrinhos.
-- Ferramentas, paleta de cores e seleção real de cores.
+- Modo quadrinhos com quadros e divisões de página.
+- Zoom, exportação de imagem ou PDF e capa automática.
 - Gravação, reprodução e armazenamento de áudio.
 - Persistência de histórias (localStorage, IndexedDB ou qualquer outro meio).
 - Exportação/importação real de backups.
@@ -51,6 +57,7 @@ meu-pequeno-quadrinho/
 ├── src/
 │   ├── app/
 │   │   ├── router.js        # rotas por hash, histórico e registro do SW
+│   │   ├── drawing.js       # motor Canvas 2D, ponteiros e buffers em memória
 │   │   ├── state.js         # estado em memória (sem persistência)
 │   │   ├── utils.js         # escape de HTML e helpers de ícones
 │   │   └── pwa.js           # registro do Service Worker
@@ -148,6 +155,41 @@ HTTPS). Isso é uma limitação do navegador, não do código.
 Não foi possível capturar screenshots porque a janela do navegador do ambiente
 de testes não estava visível; a inspeção visual foi feita por árvore de
 acessibilidade, métricas de layout e auditoria automatizada.
+
+## Testes do motor de desenho (correção dos limites)
+
+Os testes automatizados ficam em `tests/drawing-engine.test.mjs` e usam apenas
+recursos nativos do Node:
+
+```
+node --test tests/drawing-engine.test.mjs
+```
+
+Eles cobrem traços iniciados junto às quatro bordas, traço diagonal completo,
+coordenadas acima do antigo limite de 600 unidades, lápis/pincel/borracha,
+eventos coalescidos, preservação do conteúdo entre retrato e paisagem, desfazer
+e refazer de traços, borracha e limpeza, histórico por página, novo traço após
+Desfazer, redimensionamento e modo expandido.
+
+A validação final no Moto G35 ainda precisa ser feita no aparelho. Testes
+sintéticos e simulações de viewport não substituem o uso real do dedo na tela.
+
+## Desfazer e Refazer (Fase 2.2)
+
+O histórico fica em memória, dentro do registro de cada página no motor de
+desenho. Em vez de guardar uma imagem completa do canvas por ação, o motor
+registra apenas as operações de cada traço concluído (ponto, segmento, cor,
+espessura) e a ação de limpeza. Desfazer e Refazer reconstruem o desenho a
+partir dessas operações, sem cópias de canvas durante o movimento do dedo.
+
+- Cada traço completo é uma ação, incluindo os traços da borracha.
+- "Apagar tudo" também é uma ação e pode ser desfeito/refeito.
+- Um novo traço após Desfazer descarta o histórico de Refazer.
+- Cada página tem seu próprio histórico; trocar de página não mistura ações.
+- Limite: **30 ações por página**. Ao completar a 31ª ação, a mais antiga é
+  descartada. Os desenhos na tela não são alterados, mas ações antigas deixam
+  de poder ser desfeitas.
+- Os botões ficam desabilitados quando não há o que desfazer ou refazer.
 
 ## Decisões e limitações conhecidas
 

@@ -41,6 +41,7 @@ const headerBadge = document.getElementById('header-badge');
 const navLinks = Array.from(document.querySelectorAll('.bottom-nav__item'));
 
 let internalNavigation = false;
+let unmountActiveScreen = null;
 
 function normalizeRoute(value) {
   if (!value) return 'home';
@@ -73,8 +74,14 @@ function updateChrome(route) {
 function renderRoute(route, { focus = true } = {}) {
   const screen = routes[route] || routes['not-found'];
 
+  // Telas com recursos contínuos (como o canvas) podem encerrar escutas e
+  // guardar seu estado antes de serem substituídas.
+  if (typeof unmountActiveScreen === 'function') unmountActiveScreen();
+  unmountActiveScreen = null;
+
   app.innerHTML = screen.render(context);
   if (typeof screen.mount === 'function') screen.mount(app, context);
+  if (typeof screen.unmount === 'function') unmountActiveScreen = screen.unmount;
 
   updateChrome(route);
   document.title = `${pageTitles[route] || 'Tela não encontrada'} · Meu Pequeno Quadrinho`;

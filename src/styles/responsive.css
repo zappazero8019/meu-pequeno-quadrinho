@@ -26,6 +26,31 @@
   }
 }
 
+@media (max-width: 560px) {
+  .drawing-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .screen--editor.is-drawing-expanded .color-list {
+    grid-template-columns: repeat(4, minmax(44px, 1fr));
+  }
+
+  .screen--editor.is-drawing-expanded .button--history {
+    padding: 0.35rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .screen--editor.is-drawing-expanded .button--clear span {
+    display: none;
+  }
+
+  .screen--editor.is-drawing-expanded .button--clear {
+    min-width: 44px;
+    padding: 0.35rem;
+  }
+}
+
 @media (max-width: 390px) {
   .menu-tile {
     gap: 0.55rem;
@@ -42,8 +67,19 @@
   }
 
   .mode-card,
-  .placeholder-box {
+  .placeholder-box,
+  .control-card {
     padding: 0.7rem;
+  }
+
+  .tool-button,
+  .size-button {
+    min-height: 60px;
+    font-size: 0.74rem;
+  }
+
+  .color-button {
+    min-height: 50px;
   }
 
   .page-controls .button {
@@ -116,6 +152,15 @@
     min-height: 170px;
   }
 
+  .drawing-frame {
+    padding: 0.35rem;
+  }
+
+  .drawing-canvas {
+    width: min(100%, calc(66vh * 1.2));
+    width: min(100%, calc(66dvh * 1.2));
+  }
+
   .book-page {
     min-height: 180px;
   }
@@ -126,6 +171,28 @@
 
   .section-title {
     margin-top: 1rem;
+  }
+
+  .screen--editor.is-drawing-expanded .badge,
+  .screen--editor.is-drawing-expanded .control-card__subtitle {
+    display: none;
+  }
+
+  .screen--editor.is-drawing-expanded .control-card {
+    gap: 0.3rem;
+    padding: 0.4rem;
+  }
+}
+
+/* Telas baixas: barras ainda mais finas, sem reduzir os alvos de toque. */
+@media (max-height: 520px) {
+  .screen--editor.is-drawing-expanded {
+    gap: 0.25rem;
+  }
+
+  .screen--editor.is-drawing-expanded .control-card {
+    min-height: 44px;
+    padding: 0.2rem;
   }
 }
 
