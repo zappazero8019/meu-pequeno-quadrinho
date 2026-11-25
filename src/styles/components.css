@@ -422,12 +422,29 @@
   color: var(--ink-soft);
 }
 
+.story-list,
+.library-loading {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.library-loading {
+  justify-items: center;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.library-loading .icon {
+  width: 48px;
+  height: 48px;
+}
+
 .story-card {
   display: grid;
   grid-template-columns: 110px minmax(0, 1fr);
   gap: 1rem;
   padding: 0.85rem;
-  border: 2px dashed #cfc3f5;
+  border: 2px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--white);
 }
@@ -446,15 +463,79 @@
   object-fit: cover;
 }
 
-.story-card__body h3 {
-  margin: 0.35rem 0 0.25rem;
-  font-size: 1.02rem;
+.story-card__body {
+  display: grid;
+  align-content: start;
+  gap: 0.15rem;
+  min-width: 0;
 }
 
-.story-card__body p {
+.story-card__body h3 {
+  margin: 0.1rem 0 0.25rem;
+  font-size: 1.02rem;
+  overflow-wrap: anywhere;
+}
+
+.story-card__meta {
   margin: 0.15rem 0;
   color: var(--ink-soft);
   font-size: 0.84rem;
+}
+
+.story-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+}
+
+.story-card__actions .button {
+  flex: 1 1 150px;
+  padding-inline: 0.7rem;
+  font-size: 0.9rem;
+}
+
+.notice > .button {
+  min-height: 44px;
+}
+
+.continue-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.8rem;
+}
+
+.continue-card[hidden] {
+  display: none;
+}
+
+.continue-card__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--pink-soft);
+  flex: 0 0 auto;
+}
+
+.continue-card__icon .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.continue-card__text {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.continue-card__text small {
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
 }
 
 /* ---------------------------------------------------------------- formulário */
@@ -609,6 +690,71 @@
   color: var(--primary-dark);
   font-size: 0.85rem;
   font-weight: 900;
+}
+
+.save-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 32px;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--ink-soft);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.save-status__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: 0 0 auto;
+}
+
+.save-status[data-state="saving"] {
+  color: #8a6a00;
+}
+
+.save-status[data-state="saving"] .save-status__dot {
+  animation: save-pulse 1s ease-in-out infinite;
+}
+
+.save-status[data-state="saved"] {
+  color: #237a45;
+}
+
+.save-status[data-state="error"] {
+  color: #b3261e;
+  border-color: #b3261e;
+}
+
+.save-status__retry {
+  min-height: 28px;
+  padding: 0.15rem 0.45rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.save-status__retry[hidden] {
+  display: none;
+}
+
+@keyframes save-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .save-status[data-state="saving"] .save-status__dot {
+    animation: none;
+  }
 }
 
 .canvas-placeholder {
@@ -984,8 +1130,8 @@ body.is-drawing-expanded {
 .screen--editor.is-drawing-expanded .control-card__subtitle,
 .screen--editor.is-drawing-expanded .control-card > .hint,
 .screen--editor.is-drawing-expanded .mode-section,
-.screen--editor.is-drawing-expanded .narration-box,
-.screen--editor.is-drawing-expanded .page-controls,
+.screen--editor.is-drawing-expanded .narration-heading p,
+.screen--editor.is-drawing-expanded #narration-note,
 .screen--editor.is-drawing-expanded .notice {
   display: none;
 }
@@ -1004,6 +1150,21 @@ body.is-drawing-expanded {
   display: flex;
   gap: 0.35rem;
   padding: 0;
+}
+
+.screen--editor.is-drawing-expanded .save-status {
+  min-height: 44px;
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.screen--editor.is-drawing-expanded .save-status__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .screen--editor.is-drawing-expanded .drawing-actions {
@@ -1117,6 +1278,73 @@ body.is-drawing-expanded {
   border-width: 2px;
 }
 
+/* Controles de página e narração continuam presentes no modo expandido, mas
+   em uma faixa compacta no fim da tela — sem sobrepor o meio do desenho. */
+.screen--editor.is-drawing-expanded .editor-extra-controls {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: stretch;
+  gap: 0.35rem;
+  min-height: 52px;
+}
+
+.screen--editor.is-drawing-expanded .narration-box {
+  flex: 1 1 auto;
+  gap: 0.2rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0.25rem 0.4rem;
+  border-width: 1px;
+}
+
+.screen--editor.is-drawing-expanded .narration-heading {
+  gap: 0.35rem;
+}
+
+.screen--editor.is-drawing-expanded .narration-heading .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.screen--editor.is-drawing-expanded .narration-heading h3 {
+  font-size: 0.85rem;
+}
+
+.screen--editor.is-drawing-expanded .narration-status {
+  min-height: 18px;
+  font-size: 0.76rem;
+}
+
+.screen--editor.is-drawing-expanded .narration-actions {
+  flex-wrap: nowrap;
+  gap: 0.25rem;
+  overflow-x: auto;
+}
+
+.screen--editor.is-drawing-expanded .narration-actions .button {
+  min-height: 44px;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.78rem;
+}
+
+.screen--editor.is-drawing-expanded .page-controls {
+  flex: 0 0 auto;
+  grid-template-columns: repeat(2, 44px);
+  align-self: end;
+  gap: 0.25rem;
+  margin: 0;
+}
+
+.screen--editor.is-drawing-expanded .page-controls .button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.3rem;
+}
+
+.screen--editor.is-drawing-expanded .page-controls__label {
+  display: none;
+}
+
 .mode-section {
   margin-top: 1.2rem;
 }
@@ -1218,8 +1446,41 @@ body.is-drawing-expanded {
   font-size: 0.82rem;
 }
 
-.narration-box .button {
-  justify-self: start;
+.narration-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ink);
+  font-size: 0.86rem;
+}
+
+.narration-status__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--primary);
+  flex: 0 0 auto;
+}
+
+.narration-status.is-recording .narration-status__dot {
+  background: var(--danger);
+  animation: save-pulse 1.1s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .narration-status.is-recording .narration-status__dot {
+    animation: none;
+  }
+}
+
+.narration-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.narration-actions .button {
+  min-height: 44px;
 }
 
 .page-controls {

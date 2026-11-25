@@ -42,13 +42,21 @@ const navLinks = Array.from(document.querySelectorAll('.bottom-nav__item'));
 
 let internalNavigation = false;
 let unmountActiveScreen = null;
+let currentQuery = new URLSearchParams();
 
 function normalizeRoute(value) {
   if (!value) return 'home';
   return String(value)
+    .split('?')[0]
     .replace(/^#\/?/, '')
     .replace(/^\/+|\/+$/g, '')
     .toLowerCase();
+}
+
+function queryFromHash(value) {
+  const raw = String(value || '');
+  const marker = raw.indexOf('?');
+  return new URLSearchParams(marker === -1 ? '' : raw.slice(marker + 1));
 }
 
 function isValidRoute(route) {
@@ -96,18 +104,27 @@ function rerender() {
   renderRoute(getState().currentRoute, { focus: false });
 }
 
-function navigate(route, { replace = false } = {}) {
+function navigate(route, { replace = false, query = null } = {}) {
   let target = normalizeRoute(route);
   if (!isValidRoute(target)) target = 'not-found';
 
-  if (replace && target === getState().currentRoute) {
+  const params = new URLSearchParams();
+  if (query && typeof query === 'object') {
+    Object.entries(query).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') params.set(key, String(value));
+    });
+  }
+  const search = params.toString();
+  const nextHash = `#/${target}${search ? `?${search}` : ''}`;
+
+  if (replace && target === getState().currentRoute && window.location.hash === nextHash) {
     rerender();
     return;
   }
 
   if (!replace) pushHistory(getState().currentRoute);
 
-  const nextHash = `#/${target}`;
+  currentQuery = new URLSearchParams(search);
   if (window.location.hash === nextHash) {
     renderRoute(target);
     return;
@@ -125,14 +142,18 @@ function goBack() {
 function handleHashChange() {
   const requested = routeFromHash();
   const route = isValidRoute(requested) ? requested : 'not-found';
+  currentQuery = queryFromHash(window.location.hash);
 
   // Mudanças externas (botão voltar do navegador ou digitação manual) reiniciam
   // a pilha interna para evitar retornos surpreendentes a telas já abandonadas.
   if (!internalNavigation) clearHistory();
   internalNavigation = false;
 
-  if (!isValidRoute(requested) && window.location.hash !== '#/not-found') {
-    history.replaceState(null, '', `${window.location.pathname}${window.location.search}#/not-found`);
+  if (!isValidRoute(requested)) {
+    currentQuery = new URLSearchParams();
+    if (window.location.hash !== '#/not-found') {
+      history.replaceState(null, '', `${window.location.pathname}${window.location.search}#/not-found`);
+    }
   }
 
   setCurrentRoute(route);
@@ -143,7 +164,8 @@ const context = {
   navigate,
   goBack,
   rerender,
-  getState
+  getState,
+  getQueryParam: (name) => currentQuery.get(name)
 };
 
 export function initRouter() {

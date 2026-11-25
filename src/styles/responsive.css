@@ -174,8 +174,23 @@
   }
 
   .screen--editor.is-drawing-expanded .badge,
-  .screen--editor.is-drawing-expanded .control-card__subtitle {
+  .screen--editor.is-drawing-expanded .control-card__subtitle,
+  .screen--editor.is-drawing-expanded .narration-heading {
     display: none;
+  }
+
+  /* Em paisagem, ferramentas/cores e narração ocupam duas faixas finas:
+     o espaço restante volta para a área de desenho. */
+  .screen--editor.is-drawing-expanded .drawing-controls {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    overflow-x: auto;
+  }
+
+  .screen--editor.is-drawing-expanded .drawing-controls .control-card {
+    flex: 0 0 auto;
   }
 
   .screen--editor.is-drawing-expanded .control-card {

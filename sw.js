@@ -5,7 +5,7 @@
  * quando há rede. Navegações sem rede caem para o index.html em cache.
  * Nenhuma história é armazenada aqui: o cache contém apenas arquivos estáticos.
  */
-const CACHE_NAME = 'meu-pequeno-quadrinho-v8';
+const CACHE_NAME = 'meu-pequeno-quadrinho-v14';
 
 const APP_SHELL = [
   './',
@@ -14,6 +14,11 @@ const APP_SHELL = [
 
   './src/app/router.js',
   './src/app/drawing.js',
+  './src/app/drawing-data.js',
+  './src/app/database.js',
+  './src/app/story-storage.js',
+  './src/app/library-data.js',
+  './src/app/narration-controller.js',
   './src/app/state.js',
   './src/app/utils.js',
   './src/app/pwa.js',

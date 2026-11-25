@@ -11,6 +11,13 @@
  * sem distorção. Nada é gravado em disco ou banco de dados.
  */
 
+import {
+  DRAWING_DATA_VERSION,
+  cloneDrawingAction,
+  createEmptyDrawingDocument,
+  validateDrawingDocument
+} from './drawing-data.js';
+
 const LEGACY_WIDTH = 600;
 const LEGACY_HEIGHT = 500;
 const BUFFER_SCALE = 2;
@@ -349,7 +356,8 @@ export function createDrawingEngine(canvas, draft, page, onHistoryChange) {
       recordInto.push({
         ...draw.op,
         width: bufferContext.lineWidth,
-        color: bufferContext.strokeStyle
+        color: bufferContext.strokeStyle,
+        tool: preferences.tool
       });
     }
   }
@@ -623,4 +631,90 @@ export function createDrawingEngine(canvas, draft, page, onHistoryChange) {
       else window.removeEventListener('resize', resize);
     }
   };
+}
+
+/**
+ * Converte o histórico em memória de uma página em um documento serializável.
+ * Não há canvas, contexto 2D nem função no resultado: apenas a sequência de
+ * ações e a posição atual de Desfazer/Refazer (`historyIndex`).
+ *
+ * Esta função é a ponte com o banco de dados. Ela não salva nada e não altera o
+ * desenho exibido; quem decide quando gravar é a camada de persistência.
+ */
+export function serializePageDrawing(draft, page) {
+  const pages = buffersByDraft.get(draft);
+  const record = pages?.get(page);
+
+  if (!record || !record.history) return createEmptyDrawingDocument();
+
+  const history = record.history;
+  const actions = history.actions.map((action) => cloneDrawingAction(action));
+  const historyIndex = Math.min(
+    Math.max(0, Number.isFinite(history.index) ? Math.trunc(history.index) : actions.length),
+    actions.length
+  );
+
+  return { version: DRAWING_DATA_VERSION, actions, historyIndex };
+}
+
+/** Limites lógicos necessários para repintar todas as operações restauradas. */
+function drawingBounds(actions) {
+  let left = Infinity;
+  let top = Infinity;
+  let right = -Infinity;
+  let bottom = -Infinity;
+
+  actions.forEach((action) => {
+    if (action.kind !== 'stroke') return;
+
+    action.ops.forEach((op) => {
+      const radius = op.width / 2;
+      const xs = op.type === 'dot' ? [op.x] : [op.x1, op.cx, op.x2];
+      const ys = op.type === 'dot' ? [op.y] : [op.y1, op.cy, op.y2];
+
+      xs.forEach((x) => {
+        left = Math.min(left, x - radius);
+        right = Math.max(right, x + radius);
+      });
+      ys.forEach((y) => {
+        top = Math.min(top, y - radius);
+        bottom = Math.max(bottom, y + radius);
+      });
+    });
+  });
+
+  if (!Number.isFinite(left)) return null;
+  return { left, top, right, bottom };
+}
+
+/**
+ * Reconstrói o buffer de uma página a partir de um documento serializado.
+ *
+ * Cria um buffer novo (nunca reaproveita canvas antigo), dimensionado para a
+ * área visível atual e para todas as coordenadas registradas. Depois repinta o
+ * histórico completo e restaura `historyIndex`, mantendo Desfazer/Refazer.
+ * O espaço lógico e a pintura são exatamente os mesmos do traço ao vivo.
+ */
+export function restorePageDrawing(draft, page, drawing, view = {}) {
+  const document = validateDrawingDocument(drawing);
+  const actions = document.actions.map((action, index) => cloneDrawingAction(action, index));
+
+  const viewWidth = Math.max(1, Number(view.width) || 360);
+  const viewHeight = Math.max(1, Number(view.height) || 640);
+  const bounds = drawingBounds(actions);
+
+  const left = Math.min(-viewWidth / 2 - EDGE_PADDING, bounds ? bounds.left - EDGE_PADDING : Infinity);
+  const top = Math.min(-viewHeight / 2 - EDGE_PADDING, bounds ? bounds.top - EDGE_PADDING : Infinity);
+  const right = Math.max(viewWidth / 2 + EDGE_PADDING, bounds ? bounds.right + EDGE_PADDING : -Infinity);
+  const bottom = Math.max(viewHeight / 2 + EDGE_PADDING, bounds ? bounds.bottom + EDGE_PADDING : -Infinity);
+
+  const record = createPageBufferFromBounds(left, top, right - left, bottom - top, {
+    actions,
+    index: document.historyIndex
+  });
+
+  applyHistory(record);
+  getPages(draft).set(page, record);
+
+  return { version: DRAWING_DATA_VERSION, actions, historyIndex: document.historyIndex };
 }

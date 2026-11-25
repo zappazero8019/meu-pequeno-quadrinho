@@ -1,4 +1,4 @@
-import { createDraft } from '../app/state.js';
+import { createDraft, getState } from '../app/state.js';
 import { icon } from '../app/utils.js';
 
 const LIMITS = { title: 60, author: 40 };
@@ -67,7 +67,7 @@ export function render() {
         <button class="button button--primary" type="submit">${icon('sparkles')} Começar</button>
       </div>
 
-      <p class="hint">Nesta fase, título e autor ficam apenas na memória da página. Nada é salvo.</p>
+      <p class="hint">Sua história recebe um identificador e será salva neste dispositivo enquanto você desenha.</p>
     </form>
   </section>`;
 }
@@ -150,6 +150,6 @@ export function mount(root, context) {
     }
 
     createDraft(values);
-    context.navigate('editor');
+    context.navigate('editor', { query: { story: getState().draft.storyId } });
   });
 }
